@@ -4,14 +4,15 @@ Convert your spotify playlists to csv from here: http://joellehman.com/playlist/
 and then download all the songs through this script
 Depends upon youtube_dl, eyed3 and unidecode pip packages
 '''
+from __future__ import unicode_literals
+from unidecode import unidecode
 
 import os
 import csv
 import eyed3
 import argparse
 import youtube_dl
-from unidecode import unidecode
-from __future__ import unicode_literals
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-f', '--folder', help="keep the files in the folder specified")
@@ -20,6 +21,9 @@ parser.add_argument('-c', '--create', help="try to create folder if doesn't exis
 parser.add_argument('--skip', help="number of songs to skip from the start of csv",
                     type=int)
 parser.add_argument('csv', help="input csv file")
+parser.add_argument('-q', '--query', nargs='*',
+                    help="search with your own parameters specified",
+                    type=str)
 args = parser.parse_args()
 
 folder = ''
@@ -98,7 +102,13 @@ for song in songs:
         'logger': MyLogger(),
         'outtmpl': folder + '/' + song['name'] + ' - ' + song['artist'] + '.%(ext)s'
     }
-    url = ' '.join([song['name'], song['artist'], 'audio', 'youtube'])
+    search_parameters_list = [song['name'], song['artist']]
+    if not args.query:
+        url = ' '.join([song['name'], song['artist'], 'audio', 'youtube'])
+    else:
+        for parameters in args.query:
+            search_parameters_list.append(parameters)
+        url = ' '.join(search_parameters_list)
     url = 'gvsearch1:' + url
     print '[\033[91mFetching\033[00m] %s' % probable_filename
     with youtube_dl.YoutubeDL(opts) as ydl:
