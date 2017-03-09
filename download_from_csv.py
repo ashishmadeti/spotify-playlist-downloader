@@ -5,13 +5,15 @@ and then download all the songs through this script
 Depends upon youtube_dl, eyed3 and unidecode pip packages
 '''
 
+from __future__ import unicode_literals
 import os
 import csv
 import eyed3
 import argparse
 import youtube_dl
+import json
 from unidecode import unidecode
-from __future__ import unicode_literals
+from urllib import urlopen, urlretrieve
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-f', '--folder', help="keep the files in the folder specified")
@@ -19,6 +21,7 @@ parser.add_argument('-c', '--create', help="try to create folder if doesn't exis
                     action="store_true")
 parser.add_argument('--skip', help="number of songs to skip from the start of csv",
                     type=int)
+parser.add_argument('-q', '--query', help="enter the search query", type=str)
 parser.add_argument('csv', help="input csv file")
 args = parser.parse_args()
 
@@ -77,6 +80,37 @@ def download_finish(d):
         print '\x1b[1A\x1b[2K'
         print "\x1b[1A[\033[93mConverting\033[00m] %s" % d['filename']
 
+def download_album_art(song):
+    ''' Here we download art for the said album/track '''
+
+    artist = song['artist']
+    album = song['album']
+    track = song['name']
+    #Last.fm
+    API_KEY = '03f624c25bd2ffdbad319226716efe66'
+    url = urlopen('http://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key=%s&artist=%s&album=%s&format=json'%(API_KEY,artist,album)).read()
+    result = json.loads(url)
+    images = []
+    image_download = ''
+    try:
+        images = result.get('album', None).get('image', None)
+    except:
+        print 'No images found for this album/track'
+        return
+
+    for image in reversed(images):
+        if image.get('size') != "":
+            image_download = image.get('#text')
+            break
+
+    if image_download == '':
+        return
+
+    image_path = folder + '/' + track + ' - ' + artist + '.png'
+    try:
+        urlretrieve(image_download, image_path)
+    except:
+        print 'Could not download image'
 
 for song in songs:
     probable_filename = folder + '/' + song['name'] + ' - ' + \
@@ -98,16 +132,30 @@ for song in songs:
         'logger': MyLogger(),
         'outtmpl': folder + '/' + song['name'] + ' - ' + song['artist'] + '.%(ext)s'
     }
-    url = ' '.join([song['name'], song['artist'], 'audio', 'youtube'])
+    if args.query == None:
+        url = ' '.join([song['name'], song['artist'], 'audio', 'youtube'])
+    else:
+        url = ' '.join([song['name'], song['artist']]) + ' '
+        url += args.query
     url = 'gvsearch1:' + url
     print '[\033[91mFetching\033[00m] %s' % probable_filename
     with youtube_dl.YoutubeDL(opts) as ydl:
         ydl.download([url])
+
+    download_album_art(song)
+
     if os.path.isfile(probable_filename):
         afile = eyed3.load(probable_filename)
         afile.tag.title = unicode(song['name'], "utf-8")
         afile.tag.artist = unicode(song['artist'], "utf-8")
         afile.tag.album = unicode(song['album'], "utf-8")
+        try:
+            image_path = folder + '/' + song['name'] + ' - ' + song['artist'] + '.png'
+            art = open(image_path, 'rb').read()
+            afile.tag.images.set(3, art, 'image/png', song['name'] + ' - ' + song['artist'])
+        except:
+            pass
+
         afile.tag.save()
     else:
         print '\x1b[1A\x1b[2K'
