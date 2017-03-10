@@ -20,4 +20,4 @@ I am planning to add more features to this to make the experience more smooth an
 
 - [ ] Allow exporting to CSV from the script itself, will need to ask for spotify login
 - [x] Allow user to specify search terms for youtube (either through config file or through command line arguments)
-- [ ] Add Album Art to the downloaded songs
+- [x] Add Album Art to the downloaded songs
