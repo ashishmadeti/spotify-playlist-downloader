@@ -101,25 +101,17 @@ for song in songs:
         'logger': MyLogger(),
         'outtmpl': folder + '/' + song['name'] + ' - ' + song['artist'] + '.%(ext)s'
     }
-    if args.query == None:
-        url = ' '.join([song['name'], song['artist'], 'audio', 'youtube'])
+    base_query = ' '.join(song['name'] + song['artist'])
+    if args.query is None:
+        url = '%s %s' % (base_query, 'audio youtube')
     else:
-        url = ' '.join([song['name'], song['artist']]) + ' '
-        url += args.query
+        url = '%s %s' % (base_query, args.query)
     url = 'gvsearch1:' + url
     print '[\033[91mFetching\033[00m] %s' % probable_filename
     with youtube_dl.YoutubeDL(opts) as ydl:
         ydl.download([url])
 
-    image = None
-    if args.art == None:
-        image = album_art.fetch(song, backend='google')
-        if image != None:
-            print 'Downloaded image from Google'
-    else:
-        image = album_art.fetch(song, backend=args.art)
-        if image != None:
-            print 'Downloaded image from %s' %args.art
+    image = album_art.fetch(song, backend=args.art)
     if os.path.isfile(probable_filename):
         afile = eyed3.load(probable_filename)
         afile.tag.title = unicode(song['name'], "utf-8")
