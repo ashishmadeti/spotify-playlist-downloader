@@ -14,7 +14,6 @@ import youtube_dl
 import json
 import album_art
 from unidecode import unidecode
-from urllib import urlopen, urlretrieve
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-f', '--folder', help="keep the files in the folder specified")
