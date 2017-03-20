@@ -106,7 +106,6 @@ for song in songs:
     else:
         url = '%s %s' % (base_query, args.query)
     url = 'gvsearch1:' + url
-    print 'URL = %s' % url
     print '[\033[91mFetching\033[00m] %s' % probable_filename
     with youtube_dl.YoutubeDL(opts) as ydl:
         ydl.download([url])
