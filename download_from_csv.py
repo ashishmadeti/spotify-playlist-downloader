@@ -11,7 +11,6 @@ import csv
 import eyed3
 import argparse
 import youtube_dl
-import json
 import album_art
 from unidecode import unidecode
 
@@ -103,7 +102,7 @@ for song in songs:
     }
     base_query = ' '.join(song['name'] + song['artist'])
     if args.query is None:
-        url = '%s %s' % (base_query, 'audio youtube')
+        url = '%s %s' % (base_query, 'youtube')
     else:
         url = '%s %s' % (base_query, args.query)
     url = 'gvsearch1:' + url
