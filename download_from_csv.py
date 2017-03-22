@@ -37,7 +37,7 @@ opts = {
 }
 # user-agents
 headers = {
-    'User-Agent' : 'Mozilla/5.0'
+    'User-Agent': 'Mozilla/5.0'
 }
 
 
@@ -58,17 +58,22 @@ def download_finish(d):
         print '\x1b[1A\x1b[2K'
         print "\x1b[1A[\033[93mConverting\033[00m] %s" % d['filename']
 
+
 def download_image(keywords):
     keywords2 = '+'.join(keywords.split(' '))
-    url = 'https://www.google.co.in/search?q=%s\&tbm=isch'%keywords2
-    response = requests.get(url, headers = headers)
+    url = 'https://www.google.co.in/search?q=%s\&tbm=isch' % keywords2
+    response = requests.get(url, headers=headers)
     htm = response.text
     soup = BeautifulSoup(htm, 'html.parser')
     imageURL = soup.find('img').get('src')
-    wget.download(imageURL, out=keywords) # saves image as name "images"
+    wget.download(imageURL, out=keywords)  # saves image as name "images"
+
 
 def generate_csv(URI, username, auth_token):
-    cmd = 'curl -X GET "https://api.spotify.com/v1/users/' + username + '/playlists/' + URI + '/tracks" -H "Accept: application/json" -H "Authorization: Bearer ' + auth_token + '"'
+    cmd = 'curl -X GET "https://api.spotify.com/v1/users/'\
+        + username + '/playlists/' + URI\
+        + '/tracks" -H "Accept: application/json" -H '\
+        + '"Authorization: Bearer ' + auth_token + '"'
     os.system(cmd + ' > data.json')
     data = open('data.json', 'r+').read()
     os.system('rm data.json')
@@ -92,26 +97,25 @@ def generate_csv(URI, username, auth_token):
         f.write(csv_data)
         f.close()
     except Exception as e:
-        # print e
         raise Exception("Couldn't write csv file to disk")
     return 'playlist.csv'
 
 # Command line parser arguments
 parser = argparse.ArgumentParser()
-parser.add_argument('-f', '--folder', default=os.getcwd(), 
-        help="keep the files in the folder specified")
-parser.add_argument('-c', '--create', 
-        help="try to create folder if doesn't exist", action="store_true")
-parser.add_argument('--skip', 
-        help="number of songs to skip from the start of csv", type=int)
-parser.add_argument('-s', '--search', nargs='*', 
-        help="search source for songs, default is youtube")
-parser.add_argument('-p', '--playlist', 
-        help="Enter the playlist URI, with this you'd need username and token")
+parser.add_argument('-f', '--folder', default=os.getcwd(),
+                    help="keep the files in the folder specified")
+parser.add_argument('-c', '--create', action="store_true",
+                    help="try to create folder if doesn't exist")
+parser.add_argument('--skip', type=int,
+                    help="number of songs to skip from the start of csv")
+parser.add_argument('-s', '--search', nargs='*',
+                    help="search source for songs, default is youtube")
+parser.add_argument('-p', '--playlist',
+                    help="Enter the playlist URI(with username and token)")
 parser.add_argument('-u', '--username', help="Enter your username")
-parser.add_argument('-t', '--token', 
-        help="Enter authorization token, get it here:\
-            https://developer.spotify.com/web-api/console/get-playlist-tracks/")
+parser.add_argument('-t', '--token',
+                    help="Enter authorization token, get it here: https://d" +
+                    "evloper.spotify.com/web-api/console/get-playlist-tracks/")
 parser.add_argument('-i', '--csv', help="input a csv file")
 args = parser.parse_args()
 
@@ -133,14 +137,17 @@ elif args.playlist:
         token = args.token
     else:
         token = raw_input(
-        "if you don't have one, get it here: \033[94mhttps://developer.spotify.com/web-api/console/get-playlist-tracks/\n\033[93mEnter fresh token to access api: \033[0m"
-        )
+                          "if you don't have one, get it here: \033[94m" +
+                          "https://developer.spotify.com/web-api/console/ge" +
+                          "t-playlist-tracks/\n\033[93mEnter fresh token to" +
+                          " access api: \033[0m"
+                        )
     csvfile = generate_csv(args.playlist, username, token)
 else:
     parser.error("No action requested, add -p or -i. Or add -h for help")
 
 
-folder = '' # will be set to current if it's not given in arguments
+folder = ''  # will be set to current if it's not given in arguments
 if args.folder:
     args.folder = os.path.relpath(args.folder)
     if os.path.isdir(args.folder):
@@ -158,8 +165,6 @@ if args.folder:
         print 'No such folder. Aborting..'
         exit()
     print 'Storing files in', folder
-
-
 
 songs = []
 with open(csvfile, 'rb') as csvfile:
@@ -185,7 +190,8 @@ for song in songs:
         continue
     opts['progress_hooks'] = [download_finish]
     opts['logger'] = MyLogger()
-    opts['outtmpl'] = folder + '/' + song['name'] + ' - ' + song['artist'] + '.%(ext)s'
+    opts['outtmpl'] = folder + '/' + song['name']\
+        + ' - ' + song['artist'] + '.%(ext)s'
     url = ' '.join([song['name'], song['artist']])
     if args.search:
         url = 'gvsearch1: ' + url + args.search
@@ -202,13 +208,14 @@ for song in songs:
         keywords = song['name'] + ' ' + song['artist']
         download_image(keywords)
         imagedata = open(keywords, 'rb').read()
-        os.system("rm \"%s\"" %keywords)
+        os.system("rm \"%s\"" % keywords)
         afile.tag.images.set(3, imagedata, 'image/jpeg', keywords)
         afile.tag.save()
     else:
         print '\x1b[1A\x1b[2K'
-        print '\x1b[1A[\033[91mMetadata\033[00m] Could not set metadata for %s\nTemp' %  probable_filename
+        print '\x1b[1A[\033[91mMetadata\033[00m] Could not set metadata for'\
+            + '%s\nTemp' % probable_filename
 
     print '\x1b[1A\x1b[2K'
-    print '\x1b[1A[\033[92mDownloaded]\033[00m', song['name'], '-', song['artist']
-
+    print '\x1b[1A[\033[92mDownloaded]\033[00m',
+    print song['name'], '-', song['artist']
