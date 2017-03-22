@@ -181,8 +181,7 @@ for song in songs:
     opts['outtmpl'] = folder + '/' + song['name'] + ' - ' + song['artist'] + '.%(ext)s'
     url = ' '.join([song['name'], song['artist']])
     if args.search:
-        url = song['name'] + ' ' + song['artist'] + ' ' + args.search
-        url = 'gvsearch1: ' + url
+        url = 'gvsearch1: ' + url + args.search
     else:
         url = 'ytsearch: ' + url
     print '[\033[91mFetching\033[00m] %s' % probable_filename
