@@ -71,8 +71,15 @@ def generate_csv(URI, username, auth_token):
     cmd = 'curl -X GET "https://api.spotify.com/v1/users/' + username + '/playlists/' + URI + '/tracks" -H "Accept: application/json" -H "Authorization: Bearer ' + auth_token + '"'
     os.system(cmd + ' > data.json')
     data = open('data.json', 'r+').read()
+    os.system('rm data.json')
     data = json.loads(data)
     csv_data = UserString.MutableString()
+    try:
+        if data['items']:
+            print "Everything is fine"
+    except:
+        raise Exception("Either token is not good, or username or playlist\
+                URI")
     for track in xrange(len(data['items'])):
         name = data['items'][track]['track']['name']
         artist = data['items'][track]['track']['artists'][0]['name']
