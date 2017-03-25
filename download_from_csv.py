@@ -18,9 +18,9 @@ import eyed3
 import youtube_dl
 from unidecode import unidecode
 import requests
-import wget
 from bs4 import BeautifulSoup
 
+import album_art
 
 # Youtube-dl options
 opts = {
@@ -34,10 +34,6 @@ opts = {
     'progress_hooks': '',
     'logger': '',
     'outtmpl': ''
-}
-# user-agents
-headers = {
-    'User-Agent': 'Mozilla/5.0'
 }
 
 
@@ -59,16 +55,6 @@ def download_finish(d):
         print "\x1b[1A[\033[93mConverting\033[00m] %s" % d['filename']
 
 
-def download_image(keywords):
-    keywords2 = '+'.join(keywords.split(' '))
-    url = 'https://www.google.co.in/search?q=%s\&tbm=isch' % keywords2
-    response = requests.get(url, headers=headers)
-    htm = response.text
-    soup = BeautifulSoup(htm, 'html.parser')
-    imageURL = soup.find('img').get('src')
-    wget.download(imageURL, out=keywords)  # saves image as name "images"
-
-
 def generate_csv(URI, username, auth_token):
     cmd = 'curl -X GET "https://api.spotify.com/v1/users/'\
         + username + '/playlists/' + URI\
@@ -81,7 +67,8 @@ def generate_csv(URI, username, auth_token):
     csv_data = UserString.MutableString()
     try:
         if data['items']:
-            print "Everything is fine"
+            #print "Everything is fine"
+            None
     except:
         raise Exception("Either token is not good, or username or playlist\
                 URI")
@@ -109,9 +96,9 @@ parser.add_argument('-c', '--create', action="store_true",
 parser.add_argument('--skip', type=int,
                     help="number of songs to skip from the start of csv")
 parser.add_argument('-s', '--search', nargs='*',
-                    help="search source for songs, default is youtube")
+                    help="source for songs, default it youtube")
 parser.add_argument('-p', '--playlist',
-                    help="Enter the playlist URI(with username and token)")
+                    help="spotify playlist URI(requires username, auth token)")
 parser.add_argument('-u', '--username', help="Enter your username")
 parser.add_argument('-t', '--token',
                     help="Enter authorization token, get it here: https://d" +
@@ -169,7 +156,7 @@ if args.folder:
 songs = []
 with open(csvfile, 'rb') as csvfile:
     reader = csv.reader(csvfile)
-    next(reader)  # Skip the first line
+    #next(reader)  # Skip the first line
     if args.skip:
         print 'Skipping', args.skip, 'songs'
         for i in range(args.skip):
@@ -192,11 +179,10 @@ for song in songs:
     opts['logger'] = MyLogger()
     opts['outtmpl'] = folder + '/' + song['name']\
         + ' - ' + song['artist'] + '.%(ext)s'
-    url = ' '.join([song['name'], song['artist']])
     if args.search:
-        url = 'gvsearch1: ' + url + args.search
+        url = 'gvsearch1: %s %s %s'%(song['name'], song['artist'], args.search)
     else:
-        url = 'ytsearch: ' + url
+        url = 'ytsearch: %s %s %s'%(song['name'], song['artist'], 'audio')
     print '[\033[91mFetching\033[00m] %s' % probable_filename
     with youtube_dl.YoutubeDL(opts) as ydl:
         ydl.download([url])
@@ -205,11 +191,8 @@ for song in songs:
         afile.tag.title = unicode(song['name'], "utf-8")
         afile.tag.artist = unicode(song['artist'], "utf-8")
         afile.tag.album = unicode(song['album'], "utf-8")
-        keywords = song['name'] + ' ' + song['artist']
-        download_image(keywords)
-        imagedata = open(keywords, 'rb').read()
-        os.system("rm \"%s\"" % keywords)
-        afile.tag.images.set(3, imagedata, 'image/jpeg', keywords)
+        imagedata = album_art.download(song)
+        afile.tag.images.set(3, imagedata, 'image/jpeg', u'no description')
         afile.tag.save()
     else:
         print '\x1b[1A\x1b[2K'
