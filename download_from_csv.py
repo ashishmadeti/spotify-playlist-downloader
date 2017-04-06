@@ -56,18 +56,17 @@ def download_finish(d):
 
 
 def generate_csv(URI, username, auth_token):
-    cmd = 'curl -X GET "https://api.spotify.com/v1/users/'\
-        + username + '/playlists/' + URI\
-        + '/tracks" -H "Accept: application/json" -H '\
-        + '"Authorization: Bearer ' + auth_token + '"'
-    os.system(cmd + ' > data.json')
-    data = open('data.json', 'r+').read()
-    os.system('rm data.json')
-    data = json.loads(data)
-    csv_data = UserString.MutableString()
+    url = "https://api.spotify.com/v1/users/%s/playlists/%s/tracks"\
+    % (username, URI)
+    response = requests.get(url, headers={
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer %s' % (auth_token)
+                }
+            )
+    data = json.loads(response.text)
+    csv_data = UserString.MutableString('\n')
     try:
         if data['items']:
-            #print "Everything is fine"
             None
     except:
         raise Exception("Either token is not good, or username or playlist\
@@ -138,12 +137,10 @@ folder = ''  # will be set to current if it's not given in arguments
 if args.folder:
     args.folder = os.path.relpath(args.folder)
     if os.path.isdir(args.folder):
-        folder = os.path.relpath(args.folder)
         folder = args.folder
     elif args.create:
         try:
             os.makedirs(args.folder)
-            folder = os.path.relpath(args.folder)
             folder = args.folder
         except e:
             print 'Error while creating folder'
@@ -156,7 +153,7 @@ if args.folder:
 songs = []
 with open(csvfile, 'rb') as csvfile:
     reader = csv.reader(csvfile)
-    #next(reader)  # Skip the first line
+    next(reader)
     if args.skip:
         print 'Skipping', args.skip, 'songs'
         for i in range(args.skip):
@@ -192,8 +189,12 @@ for song in songs:
         afile.tag.artist = unicode(song['artist'], "utf-8")
         afile.tag.album = unicode(song['album'], "utf-8")
         imagedata = album_art.download(song)
-        afile.tag.images.set(3, imagedata, 'image/jpeg', u'no description')
-        afile.tag.save()
+        if imagedata:
+            afile.tag.images.set(3, imagedata, 'image/jpeg', u'no description')
+            afile.tag.save()
+        else:
+            print '\x1b[1A[\033[91mMetadata\033[00m] Could not set metadata for'\
+                + '%s\nTemp' % probable_filename
     else:
         print '\x1b[1A\x1b[2K'
         print '\x1b[1A[\033[91mMetadata\033[00m] Could not set metadata for'\

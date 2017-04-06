@@ -8,7 +8,7 @@ Download your spotify playlists using simple python script
 
 ### Downloading playlist
 
-* Install dependencies: `pip install youtube_dl eyed3 unidecode wget bs4` (May require root priveleges)
+* Install dependencies: `pip install youtube_dl eyed3 unidecode bs4` (May require root priveleges)
 * Convert your spotify playlists to csv from [here](http://joellehman.com/playlist/) (Thanks to [Joel Lehman](https://github.com/jal278))
 * If you don't convert playlist to csv file, give playlist URI, username, and
   access token as commandline argument

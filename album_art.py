@@ -15,7 +15,10 @@ def download(song):
     htm = response.text
     soup = BeautifulSoup(htm, 'html.parser')
     imageURL = soup.find('img').get('src')
-    response = requests.get(imageURL, stream=True)
+    try:
+        response = requests.get(imageURL, stream=True)
+    except:
+        return None
     output = StringIO.StringIO()
     for chunk in response:
         output.write(chunk)
