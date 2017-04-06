@@ -89,3 +89,6 @@ ENV/
 .ropeproject
 
 .tags
+.pyc
+.csv
+.mp3
