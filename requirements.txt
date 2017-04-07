@@ -1,0 +1,4 @@
+youtube_dl
+eyed3
+unidecode
+spotipy
