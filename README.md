@@ -15,10 +15,12 @@ If you already have [Python](http://www.python.org/) on your system you can inst
 ### Downloading playlist
 >`$ cd spotify_download`
 > (For usage: `python download.py -h`)
+* Use [download.py](spotify_download/download.py) to download all songs from the playlist.
+
 1. Download through CSV File
     * Convert your spotify playlists to csv from [here](http://joellehman.com/playlist/) (Thanks to [Joel Lehman](https://github.com/jal278))
-    * Use [download.py](spotify_download/download.py) to download all songs from the playlist.
-2. Download through user login
+
+2. Download through User Login
     * Login to your spotify account and Create your [Application](https://developer.spotify.com/my-applications/#!/applications)
         * Set Redirect URIs = `http://localhost/` in your application settings and save it.
         * Set environment variables like,
