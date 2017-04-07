@@ -29,6 +29,7 @@ If you already have [Python](http://www.python.org/) on your system you can inst
               - export SPOTIPY_CLIENT_SECRET='your-spotify-client-secret'
               - export SPOTIPY_REDIRECT_URI='your-app-redirect-url'
 
+        * You will be redirected to login into you spotify account on web browser. After successful login you just need to copy the `http://localhost/?code=...` URL from your browser and paste it to the console where your script is running.      
 ### TODO
 I am planning to add more features to this to make the experience more smooth and improve the quality of the downloaded songs. Feel free to open an issue for any bug or enhancement that
 
