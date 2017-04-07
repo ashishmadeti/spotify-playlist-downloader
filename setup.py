@@ -4,7 +4,7 @@ long_description = open('README.md').read()
 
 setup(
     name='spotipy_download',
-    version='1.2',
+    version='1.0',
     description='Script to download your spotify playlists',
     long_description=long_description,
     author="@ashishmadeti",

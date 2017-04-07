@@ -6,12 +6,26 @@ Download your spotify playlists using simple python script
 * Adds metadata to the downloaded songs (title, artist and album)
 * Download only the songs you don't have
 
+
+### Installation
+If you already have [Python](http://www.python.org/) on your system you can install the library simply by downloading the distribution, unpack it and install in the usual fashion: (May require root priveleges)
+
+    python setup.py install
+
 ### Downloading playlist
+>`$ cd spotify_download`
+> (For usage: `python download.py -h`)
+1. Download through CSV File
+    * Convert your spotify playlists to csv from [here](http://joellehman.com/playlist/) (Thanks to [Joel Lehman](https://github.com/jal278))
+    * Use [download.py](spotigy_download/download.py) to download all songs from the playlist.
+2. Download through user login
+    * Login to your spotify account and Create your [Application](https://developer.spotify.com/my-applications/#!/applications)
+        * Set Redirect URIs = `http://localhost/` in your application settings and save it.
+        * Set environment variables like,
 
-* Install dependencies: `pip install youtube_dl eyed3 unidecode` (May require root priveleges)
-* Convert your spotify playlists to csv from [here](http://joellehman.com/playlist/) (Thanks to [Joel Lehman](https://github.com/jal278))
-* Use [download_from_csv.py](download_from_csv.py) to download all songs from the playlist. (For usage: `python download_from_csv.py -h`)
-
+              - export SPOTIPY_CLIENT_ID='your-spotify-client-id'
+              - export SPOTIPY_CLIENT_SECRET='your-spotify-client-secret'
+              - export SPOTIPY_REDIRECT_URI='your-app-redirect-url'
 
 ### TODO
 I am planning to add more features to this to make the experience more smooth and improve the quality of the downloaded songs. Feel free to open an issue for any bug or enhancement that
