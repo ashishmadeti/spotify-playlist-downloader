@@ -1,10 +1,4 @@
-'''Script to download your spotify playlists
-
-Convert your spotify playlists to csv from here:
-http://joellehman.com/playlist/
-and then download all the songs through this script
-Depends upon youtube_dl, eyed3 and unidecode pip packages
-'''
+#!/usr/bin/env python
 from __future__ import unicode_literals
 import os
 import csv
@@ -104,7 +98,7 @@ def get_songs_from_playlist(tracks):
     return songs
 
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', '--folder', help="keep the files in the folder specified")
     parser.add_argument('-c', '--create', help="try to create folder if doesn't exist",
@@ -113,6 +107,8 @@ if __name__ == '__main__':
                         type=int)
     parser.add_argument('-csv', help="input csv file")
     parser.add_argument('-username', help="username of your spotify account")
+    
+
     args = parser.parse_args()
 
     # getting current working directory
@@ -170,3 +166,8 @@ if __name__ == '__main__':
         else:
             print "Can't get token for", username
             exit()
+
+
+if __name__ == '__main__':
+    main()
+    
