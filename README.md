@@ -13,8 +13,8 @@ If you already have [Python](http://www.python.org/) on your system you can inst
     python setup.py install
 
 ### Downloading playlist
-> For usage: `download_spotify_playlist -h`
-* Use [download.py](spotify_download/download.py) to download all songs from the playlist.
+
+* For usage: `download_spotify_playlist -h`
 
 1. Download through CSV File
     * Convert your spotify playlists to csv from [here](http://joellehman.com/playlist/) (Thanks to [Joel Lehman](https://github.com/jal278))
