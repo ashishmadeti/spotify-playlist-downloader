@@ -10,7 +10,7 @@ import spotipy.util as util
 from unidecode import unidecode
 
 
-def get_songs_from_csvfile(csvfile):
+def get_songs_from_csvfile(csvfile, args):
     songs = []
     with open(csvfile, 'rb') as csvfile:
         reader = csv.reader(csvfile)
@@ -45,7 +45,7 @@ def download_finish(d):
         print "\x1b[1A[\033[93mConverting\033[00m] %s" % d['filename']
 
 
-def download_songs(songs):
+def download_songs(songs, folder):
     for song in songs:
         probable_filename = folder + '/' + song['name'] + ' - ' + \
             song['artist'] + '.mp3'
@@ -86,7 +86,7 @@ def download_songs(songs):
         print '\x1b[1A[\033[92mDownloaded]\033[00m', song['name'], '-', song['artist']
 
 
-def get_songs_from_playlist(tracks):
+def get_songs_from_playlist(tracks, args):
     songs = []
     for item in tracks['items'][args.skip:]:
         track = item['track']
@@ -105,9 +105,9 @@ def main():
                         action="store_true")
     parser.add_argument('--skip', help="number of songs to skip from the start of csv",
                         type=int)
-    parser.add_argument('-csv', help="input csv file")
-    parser.add_argument('-username', help="username of your spotify account")
-    
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument('-csv', help="input csv file")
+    group.add_argument('-username', help="username of your spotify account")
 
     args = parser.parse_args()
 
@@ -131,8 +131,8 @@ def main():
     if args.csv:
         if os.path.isfile(args.csv):
             csvfile = args.csv
-            songs = get_songs_from_csvfile(csvfile)
-            download_songs(songs)
+            songs = get_songs_from_csvfile(csvfile, args)
+            download_songs(songs, folder)
         else:
             print 'No such csv file. Aborting..'
             exit()
@@ -150,15 +150,15 @@ def main():
             if len(playlists) > 0:
                 print "All Playlists: "
                 for index, playlist in enumerate(playlists['items']):
-                    print str(index+1) + ": " + playlist['name']
+                    print str(index + 1) + ": " + playlist['name']
                 n = raw_input("Enter S.N. of playlists (seprated by comma): ").replace(" ", "")
                 if n:
                     for i in xrange(0, len(n), 2):
-                        playlist_id = playlists['items'][int(n[i])-1]['id']
+                        playlist_id = playlists['items'][int(n[i]) - 1]['id']
                         tracks = sp.user_playlist(args.username, playlist_id,
                                                   fields="tracks,next")['tracks']
-                        songs = get_songs_from_playlist(tracks)
-                        download_songs(songs)
+                        songs = get_songs_from_playlist(tracks, args)
+                        download_songs(songs, folder)
                 else:
                     print "No S.N. Provided! Aborting..."
             else:
@@ -170,4 +170,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-    
