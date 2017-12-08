@@ -1,22 +1,20 @@
-from setuptools import setup
-
-long_description = open('README.md').read()
+from setuptools import setup, find_packages
 
 setup(
     name='download_spotify_playlist',
     version='1.0',
     description='Script to download your spotify playlists',
-    long_description=long_description,
-    author="@ashishmadeti",
-    #author_email='',
+    author="Ashish Madeti",
+    author_email="ashishmadeti@gmail.com",
     install_requires=[
         'youtube_dl',
         'eyed3',
+        'requests',
         'unidecode',
         'spotipy',
     ],
     license='MIT',
-    packages=['download_spotify_playlist'],
+    packages=find_packages(),
     entry_points={
         'console_scripts': ['download_spotify_playlist = download_spotify_playlist.download:main'],
     },
