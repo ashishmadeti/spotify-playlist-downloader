@@ -26,13 +26,13 @@ If you already have [Python](http://www.python.org/) on your system you can inst
 
               - export SPOTIPY_CLIENT_ID='your-spotify-client-id'
               - export SPOTIPY_CLIENT_SECRET='your-spotify-client-secret'
-              - export SPOTIPY_REDIRECT_URI='your-app-redirect-url'
+              - export SPOTIPY_REDIRECT_URI='http://localhost/'
 
-        * You will be redirected to login into you spotify account on web browser. After successful login you just need to copy the `http://localhost/?code=...` URL from your browser and paste it to the console where your script is running.
-    * In case your sporify account is linked with your facebook account. Then you can find your username just near your profile image on top `nav bar`. (It will look like some weird text, for eg. `21bidmx2qwnllmviu3z2blt4q`)           
+        * You will be redirected to login into you spotify account on web browser. After successful login you just need to copy the whole `http://localhost/?code=...` URL from your browser and paste it to the console where your script is running.
+    * In case your sporify account is linked with your facebook account, use your device username in the `username` argument for the script and use your device password to log in to spotify in the browser window that opens.
 ### TODO
 I am planning to add more features to this to make the experience more smooth and improve the quality of the downloaded songs. Feel free to open an issue for any bug or enhancement that
 
-- [ ] Allow exporting to CSV from the script itself, will need to ask for spotify login
+- [X] Allow choosing playlist from the script itself, will need to ask for spotify login (Thanks to [Hitesh Garg](https://github.com/hiteshgarg14))
 - [ ] Allow user to specify search terms for youtube (either through config file or through command line arguments)
 - [ ] Add Album Art to the downloaded songs
