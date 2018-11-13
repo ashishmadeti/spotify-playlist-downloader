@@ -43,6 +43,9 @@ def download_finish(d):
     if d['status'] == 'finished':
         print '\x1b[1A\x1b[2K'
         print "\x1b[1A[\033[93mConverting\033[00m] %s" % d['filename']
+    # elif d['status'] == 'downloading':
+    #    print '\x1b[1A\x1b[2K'
+    #    print "\x1b[1A[\033[93mTemporary File\033[00m] %s" % d['tmpfilename']
 
 
 def download_songs(songs, folder):
@@ -62,12 +65,13 @@ def download_songs(songs, folder):
                 'preferredcodec': 'mp3',
                 'preferredquality': '256',
             }],
+     #       'verbose': True,
             'progress_hooks': [download_finish],
             'logger': MyLogger(),
             'outtmpl': folder + '/' + song['name'] + ' - ' + song['artist'] + '.%(ext)s'
         }
         url = ' '.join([song['name'], song['artist'], 'audio', 'youtube'])
-        url = 'gvsearch1:' + url
+        url = 'ytsearch:' + url
         print '[\033[91mFetching\033[00m] %s' % probable_filename
         with youtube_dl.YoutubeDL(opts) as ydl:
             ydl.download([url])
@@ -151,14 +155,22 @@ def main():
                 print "All Playlists: "
                 for index, playlist in enumerate(playlists['items']):
                     print str(index + 1) + ": " + playlist['name']
-                n = raw_input("Enter S.N. of playlists (seprated by comma): ").replace(" ", "")
+                n = raw_input("Enter S.N. of playlists (seprated by comma): ").split(",")
                 if n:
                     for i in xrange(0, len(n), 2):
-                        playlist_id = playlists['items'][int(n[i]) - 1]['id']
-                        tracks = sp.user_playlist(args.username, playlist_id,
+                       playlist_folder = folder+"/"+playlists['items'][int(n[i]) - 1]['name']
+                       print 'Storing files in', playlist_folder
+                       if not os.path.isdir(playlist_folder):
+                            try:
+                                os.makedirs(playlist_folder )
+                            except e:
+                                print 'Error while creating folder'
+                                raise
+                       playlist_id = playlists['items'][int(n[i]) - 1]['id']
+                       tracks = sp.user_playlist(args.username, playlist_id,
                                                   fields="tracks,next")['tracks']
-                        songs = get_songs_from_playlist(tracks, args)
-                        download_songs(songs, folder)
+                       songs = get_songs_from_playlist(tracks, args)
+                       download_songs(songs, playlist_folder )
                 else:
                     print "No S.N. Provided! Aborting..."
             else:
