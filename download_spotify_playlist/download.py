@@ -43,9 +43,6 @@ def download_finish(d):
     if d['status'] == 'finished':
         print '\x1b[1A\x1b[2K'
         print "\x1b[1A[\033[93mConverting\033[00m] %s" % d['filename']
-    # elif d['status'] == 'downloading':
-    #    print '\x1b[1A\x1b[2K'
-    #    print "\x1b[1A[\033[93mTemporary File\033[00m] %s" % d['tmpfilename']
 
 
 def download_songs(songs, folder):
