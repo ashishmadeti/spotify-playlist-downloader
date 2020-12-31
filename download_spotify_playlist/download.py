@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-from __future__ import unicode_literals
+#!/usr/bin/env python3
+
 import os
 import csv
 import eyed3
@@ -16,14 +16,14 @@ def get_songs_from_csvfile(csvfile, args):
         reader = csv.reader(csvfile)
         next(reader)  # Skip the first line
         if args.skip:
-            print 'Skipping', args.skip, 'songs'
+            print('Skipping', args.skip, 'songs')
             for i in range(args.skip):
                 next(reader)
         for row in reader:
             songs.append({
-                'name': unidecode(unicode(row[0], "utf-8")).strip(),
-                'artist': unidecode(unicode(row[1], "utf-8")).strip(),
-                'album': unidecode(unicode(row[2], "utf-8")).strip()
+                'name': unidecode(row[0]).strip(),
+                'artist': unidecode(row[1]).strip(),
+                'album': unidecode(row[2]).strip()
             })
     return songs
 
@@ -41,8 +41,8 @@ class MyLogger(object):
 
 def download_finish(d):
     if d['status'] == 'finished':
-        print '\x1b[1A\x1b[2K'
-        print "\x1b[1A[\033[93mConverting\033[00m] %s" % d['filename']
+        print('\x1b[1A\x1b[2K')
+        print("\x1b[1A[\033[93mConverting\033[00m] %s" % d['filename'])
 
 
 def download_songs(songs, folder):
@@ -51,8 +51,8 @@ def download_songs(songs, folder):
             song['artist'] + '.mp3'
         if os.path.isfile(probable_filename):
             # The file may already be there, so skip
-            print '[\033[93mSkipping\033[00m] %s by %s' % \
-                (song['name'], song['artist'])
+            print('[\033[93mSkipping\033[00m] %s by %s' % \
+                (song['name'], song['artist']))
             continue
         opts = {
             'format': 'bestaudio/best',
@@ -69,22 +69,22 @@ def download_songs(songs, folder):
         }
         url = ' '.join([song['name'], song['artist'], 'audio', 'youtube'])
         url = 'ytsearch:' + url
-        print '[\033[91mFetching\033[00m] %s' % probable_filename
+        print('[\033[91mFetching\033[00m] %s' % probable_filename)
         with youtube_dl.YoutubeDL(opts) as ydl:
             ydl.download([url])
         if os.path.isfile(probable_filename):
             afile = eyed3.load(probable_filename)
-            afile.tag.title = unicode(song['name'], "utf-8")
-            afile.tag.artist = unicode(song['artist'], "utf-8")
-            afile.tag.album = unicode(song['album'], "utf-8")
+            afile.tag.title = song['name']
+            afile.tag.artist = song['artist']
+            afile.tag.album = song['album']
             afile.tag.save()
         else:
-            print '\x1b[1A\x1b[2K'
-            print '\x1b[1A[\033[91mMetadata\033[00m] Could not set metadata for %s\nTemp' % \
-                probable_filename
+            print('\x1b[1A\x1b[2K')
+            print('\x1b[1A[\033[91mMetadata\033[00m] Could not set metadata for %s\nTemp' % \
+                probable_filename)
 
-        print '\x1b[1A\x1b[2K'
-        print '\x1b[1A[\033[92mDownloaded]\033[00m', song['name'], '-', song['artist']
+        print('\x1b[1A\x1b[2K')
+        print('\x1b[1A[\033[92mDownloaded]\033[00m', song['name'], '-', song['artist'])
 
 
 def get_songs_from_playlist(tracks, args):
@@ -123,19 +123,19 @@ def main():
                 os.makedirs(args.folder)
                 folder = os.path.abspath(args.folder)
             except e:
-                print 'Error while creating folder'
+                print('Error while creating folder')
                 raise
         else:
-            print 'No such folder. Aborting..'
+            print('No such folder. Aborting..')
             exit()
-        print 'Storing files in', folder
+        print('Storing files in', folder)
     if args.csv:
         if os.path.isfile(args.csv):
             csvfile = args.csv
             songs = get_songs_from_csvfile(csvfile, args)
             download_songs(songs, folder)
         else:
-            print 'No such csv file. Aborting..'
+            print('No such csv file. Aborting..')
             exit()
 
     if args.username:
@@ -146,22 +146,22 @@ def main():
             try:
                 playlists = sp.user_playlists(args.username)
             except spotipy.client.SpotifyException:
-                print "Invalid Username"
+                print("Invalid Username")
                 exit()
             if len(playlists) > 0:
-                print "All Playlists: "
+                print("All Playlists: ")
                 for index, playlist in enumerate(playlists['items']):
-                    print str(index + 1) + ": " + playlist['name']
-                n = raw_input("Enter S.N. of playlists (seprated by comma): ").split(",")
+                    print(str(index + 1) + ": " + playlist['name'])
+                n = input("Enter S.N. of playlists (seprated by comma): ").split(",")
                 if n:
-                    for i in xrange(0, len(n), 2):
+                    for i in range(0, len(n), 2):
                        playlist_folder = folder+"/"+playlists['items'][int(n[i]) - 1]['name']
-                       print 'Storing files in', playlist_folder
+                       print('Storing files in', playlist_folder)
                        if not os.path.isdir(playlist_folder):
                             try:
                                 os.makedirs(playlist_folder )
                             except e:
-                                print 'Error while creating folder'
+                                print('Error while creating folder')
                                 raise
                        playlist_id = playlists['items'][int(n[i]) - 1]['id']
                        tracks = sp.user_playlist(args.username, playlist_id,
@@ -169,11 +169,11 @@ def main():
                        songs = get_songs_from_playlist(tracks, args)
                        download_songs(songs, playlist_folder )
                 else:
-                    print "No S.N. Provided! Aborting..."
+                    print("No S.N. Provided! Aborting...")
             else:
-                print "No Playlist Found!"
+                print("No Playlist Found!")
         else:
-            print "Can't get token for", username
+            print("Can't get token for", username)
             exit()
 
 
