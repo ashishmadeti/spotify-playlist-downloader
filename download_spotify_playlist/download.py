@@ -12,7 +12,7 @@ from unidecode import unidecode
 
 def get_songs_from_csvfile(csvfile, args):
     songs = []
-    with open(csvfile, 'rb') as csvfile:
+    with open(csvfile, 'r') as csvfile:
         reader = csv.reader(csvfile)
         next(reader)  # Skip the first line
         if args.skip:
